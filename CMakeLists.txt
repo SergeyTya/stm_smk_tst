@@ -31,10 +31,12 @@ if(${CMAKE_C_COMPILER_ID} STREQUAL "GNU")
 		-Wall 
 		-fdata-sections 
 		-ffunction-sections
+		-fsigned-char
 		#debug flags
 		-g 
 		#-gdwart-2
 		 ##???
+		 -MMD -MP -MF
 		)
 	
 	set(C_DEFS 
@@ -43,18 +45,21 @@ if(${CMAKE_C_COMPILER_ID} STREQUAL "GNU")
 		)
 		
 	string(REPLACE ";" " " _LINKER_CPU_FLAGS "${CPU_FLAGS}")
-	set(LINKER_FILE  "STM32F103ZETx_FLASH.ld")
+	set(LINKER_FILE  "${CMAKE_CURRENT_LIST_DIR}/STM32F103ZETx_FLASH.ld")
 	
 	string(APPEND CMAKE_EXE_LINKER_FLAGS 
 		${_LINKER_CPU_FLAGS}
-		--specs=nano.specs
-		${LINKER_FILE}
+		--specs=nano.specs,
 		-lc -lm -lnosys
-		-Wl,-Map=${TARGET_NAME}.map
+		-Wl,-Map=${TARGET_NAME}.map,
 		--cref -Wl,--gc-sections
+		-nostartfiles
+		-Xlinker --gc-sections
+		-fdata-sections -ffreestanding -Wall -Wextra
+		-g3
 	)
 	
-#	set(osport_path "GCC/ARM_CM3")
+	set(osport_path "GCC/ARM_CM3")
 	
 	message("-- Comiler flags: ${CPU_FLAGS} ${COMPILER_FLAGS}")
 	message("-- Linker  flags: ${CMAKE_EXE_LINKER_FLAGS}")
@@ -65,36 +70,42 @@ endif()
 
 add_compile_options(${CPU_FLAGS} ${COMPILER_FLAGS} ${C_DEFS})
 
-set_property(SOURCE startup_stm32f103xe.s APPEND PROPERTY COMPILE_OPTIONS "-x" "assembler-with-cpp")
+#set_property(SOURCE ./startup_stm32f103xe.s APPEND PROPERTY COMPILE_OPTIONS "-x" "assembler-with-cpp")
 
 add_executable(${TARGET_NAME} 
-	../Src/main.c
-	../Src/stm32f1xx_it.c 
-	../Src/stm32f1xx_hal_msp.c 
-	../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c 
-	../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim.c 
-	../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim_ex.c 
-	../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.c 
-	../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.c 
-	../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc_ex.c
-	../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.c
-	../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_dma.c
-	../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.c
-	../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pwr.c
-	../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash.c
-	../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c
-	../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_exti.c 
-	../Src/system_stm32f1xx.c
+	${CMAKE_CURRENT_LIST_DIR}/startup_stm32f103xe.s
+	${CMAKE_CURRENT_LIST_DIR}/Src/main.c
+	${CMAKE_CURRENT_LIST_DIR}/Src/stm32f1xx_it.c 
+	${CMAKE_CURRENT_LIST_DIR}/Src/stm32f1xx_hal_msp.c 
+	${CMAKE_CURRENT_LIST_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c 
+	${CMAKE_CURRENT_LIST_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim.c 
+	${CMAKE_CURRENT_LIST_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim_ex.c 
+	${CMAKE_CURRENT_LIST_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.c 
+	${CMAKE_CURRENT_LIST_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.c 
+	${CMAKE_CURRENT_LIST_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc_ex.c
+	${CMAKE_CURRENT_LIST_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.c
+	${CMAKE_CURRENT_LIST_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_dma.c
+	${CMAKE_CURRENT_LIST_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.c
+	${CMAKE_CURRENT_LIST_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pwr.c
+	${CMAKE_CURRENT_LIST_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash.c
+	${CMAKE_CURRENT_LIST_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c
+	${CMAKE_CURRENT_LIST_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_exti.c 
+	${CMAKE_CURRENT_LIST_DIR}/Src/system_stm32f1xx.c
 	)
 	
 include_directories(
-	../Inc
-	../Drivers/STM32F1xx_HAL_Driver/Inc 
-	../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy 
-	../Drivers/CMSIS/Device/ST/STM32F1xx/Include 
-	../Drivers/CMSIS/Include 
-	../Drivers/CMSIS/Include
+	./Inc
+	./Drivers/STM32F1xx_HAL_Driver/Inc 
+	./Drivers/STM32F1xx_HAL_Driver/Inc/Legacy 
+	./Drivers/CMSIS/Device/ST/STM32F1xx/Include 
+	./Drivers/CMSIS/Include 
+	./Drivers/CMSIS/Include
 )
+
+#set_target_properties(${TARGET_NAME} PROPERTIES LINK_DEPENDS ${LINKER_FILE})
+
+
+
 
 firmware_size(${TARGET_NAME})
 

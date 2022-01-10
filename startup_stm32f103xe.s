@@ -28,6 +28,8 @@
   ******************************************************************************
   */
 
+
+
   .syntax unified
   .cpu cortex-m3
   .fpu softvfp
@@ -36,17 +38,16 @@
 .global g_pfnVectors
 .global Default_Handler
 
-/* start address for the initialization values of the .data section.
-defined in linker script */
-.word _sidata
+/* start address for the initialization values of the .data section. defined in linker script */
+.extern .word _sidata
 /* start address for the .data section. defined in linker script */
-.word _sdata
+.extern _sdata:word
 /* end address for the .data section. defined in linker script */
-.word _edata
+.extern .word _edata
 /* start address for the .bss section. defined in linker script */
-.word _sbss
+.extern .word _sbss
 /* end address for the .bss section. defined in linker script */
-.word _ebss
+.extern .word _ebss
 
 .equ  BootRAM,        0xF1E0F85F
 /**
@@ -62,6 +63,7 @@ defined in linker script */
   .weak Reset_Handler
   .type Reset_Handler, %function
 Reset_Handler:
+
 
 /* Copy the data segment initializers from flash to SRAM */
   ldr r0, =_sdata
@@ -130,7 +132,7 @@ Infinite_Loop:
 
 g_pfnVectors:
 
-  .word _estack
+  .extern .word _estack
   .word Reset_Handler
   .word NMI_Handler
   .word HardFault_Handler
