@@ -16,8 +16,7 @@ execute_process(
 )
 
 get_filename_component(ARM_TOOLCHAIN_DIR ${BINUTILS_PATH} DIRECTORY)
-message("----TOOLCHAIN_DIR-----")
-message(${ARM_TOOLCHAIN_DIR})
+message("-- TOOLCHAIN_DIR ${ARM_TOOLCHAIN_DIR}")
 # Without that flag CMake is not able to pass test compilation check
 if (${CMAKE_VERSION} VERSION_EQUAL "3.6.0" OR ${CMAKE_VERSION} VERSION_GREATER "3.6")
     set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
