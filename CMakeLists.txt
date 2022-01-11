@@ -29,14 +29,18 @@ if(${CMAKE_C_COMPILER_ID} STREQUAL "GNU")
 	
 	set(COMPILER_FLAGS
 		-Wall 
+		-Wextra
 		-fdata-sections 
 		-ffunction-sections
 		-fsigned-char
+		-ffreestanding 
+		-nostartfiles
+		-nostdlib
 		#debug flags
-		-g 
-		#-gdwart-2
+		#-ggdb3
+		-ggdb3
 		 ##???
-		 -MMD -MP -MF
+		# -MMD -MP -MF
 		)
 	
 	set(C_DEFS 
@@ -47,19 +51,19 @@ if(${CMAKE_C_COMPILER_ID} STREQUAL "GNU")
 	string(REPLACE ";" " " _LINKER_CPU_FLAGS "${CPU_FLAGS}")
 	set(LINKER_FILE  "${CMAKE_CURRENT_LIST_DIR}/STM32F103ZETx_FLASH.ld")
 	
-	string(APPEND CMAKE_EXE_LINKER_FLAGS 
-		${_LINKER_CPU_FLAGS}
-		--specs=nano.specs,
-		-lc -lm -lnosys
-		-Wl,-Map=${TARGET_NAME}.map,
-		--cref -Wl,--gc-sections
-		-nostartfiles
-		-Xlinker --gc-sections
-		-fdata-sections -ffreestanding -Wall -Wextra
-		-g3
-	)
+	string(APPEND CMAKE_EXE_LINKER_FLAGS " ${_LINKER_CPU_FLAGS}" 	     )
+	string(APPEND CMAKE_EXE_LINKER_FLAGS " -T ${LINKER_FILE} "	         )
+	string(APPEND CMAKE_EXE_LINKER_FLAGS " --specs=nosys.specs"	         	  )
+	string(APPEND CMAKE_EXE_LINKER_FLAGS " -Wl,-Map=${TARGET_NAME}.map,--cref") # Generate map file
+	#string(APPEND CMAKE_EXE_LINKER_FLAGS " -Wl,-nostartfiles,-nostdlib "	  ) # Do not use the standard system startup files when linking
+	string(APPEND CMAKE_EXE_LINKER_FLAGS " -Wl,-gc-sections      	   " 	  ) # Delete unused section
 	
-	set(osport_path "GCC/ARM_CM3")
+	# https://www.opennet.ru/docs/RUS/gcc/gcc1-2.html
+	# https://gcc.gnu.org/onlinedocs/gcc/C-Dialect-Options.html
+	# https://gcc.gnu.org/onlinedocs/gcc/ARM-Options.html
+	# https://gcc.gnu.org/onlinedocs/gnat_ugn/Compilation-options.html
+	# https://gcc.gnu.org/onlinedocs/gcc/Spec-Files.html
+	
 	
 	message("-- Comiler flags: ${CPU_FLAGS} ${COMPILER_FLAGS}")
 	message("-- Linker  flags: ${CMAKE_EXE_LINKER_FLAGS}")
@@ -101,11 +105,6 @@ include_directories(
 	./Drivers/CMSIS/Include 
 	./Drivers/CMSIS/Include
 )
-
-#set_target_properties(${TARGET_NAME} PROPERTIES LINK_DEPENDS ${LINKER_FILE})
-
-
-
 
 firmware_size(${TARGET_NAME})
 
@@ -210,7 +209,7 @@ firmware_size(${TARGET_NAME})
 #include(system/lib.cmake)
 #include_directories(./include)
 #
-#set_target_properties(stm32_tst PROPERTIES LINK_DEPENDS ${LINKER_FILE})
+#set_target_properties(stm32_tst PROPERTIES LINK_DEPENDS "${LINKER_FILE}")
 #
 #
 #
