@@ -38,9 +38,11 @@ if(${CMAKE_C_COMPILER_ID} STREQUAL "GNU")
 		-nostdlib
 		#debug flags
 		#-ggdb3
-		-ggdb3
+		-g3
+		-DDEBUG
 		 ##???
-		# -MMD -MP -MF
+		 -std=gnu11
+		 -MMD -MP -MF
 		)
 	
 	set(C_DEFS 
@@ -57,6 +59,14 @@ if(${CMAKE_C_COMPILER_ID} STREQUAL "GNU")
 	string(APPEND CMAKE_EXE_LINKER_FLAGS " -Wl,-Map=${TARGET_NAME}.map,--cref") # Generate map file
 	#string(APPEND CMAKE_EXE_LINKER_FLAGS " -Wl,-nostartfiles,-nostdlib "	  ) # Do not use the standard system startup files when linking
 	string(APPEND CMAKE_EXE_LINKER_FLAGS " -Wl,-gc-sections      	   " 	  ) # Delete unused section
+	
+	
+#arm-none-eabi-gcc -mcpu=cortex-m3 -mthumb -Og -fmessage-length=0 -fsigned-char 
+# -ffunction-sections -fdata-sections -ffreestanding -Wall -Wextra  
+#-g3 -DDEBUG -DUSE_FULL_ASSERT -DSTM32F103xE -DUSE_HAL_DRIVER -DHSE_VALUE=8000000 
+#-I"../include" -I"../system/include" -I"../system/include/cmsis" -I"../system/include/stm32f1-hal" 
+#-std=gnu11 -MMD -MP -MF"src/write.d" -MT"src/write.o" -c -o "src/write.o" "../src/write.c"
+	
 	
 	# https://www.opennet.ru/docs/RUS/gcc/gcc1-2.html
 	# https://gcc.gnu.org/onlinedocs/gcc/C-Dialect-Options.html

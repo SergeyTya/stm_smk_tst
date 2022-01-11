@@ -1,0 +1,2 @@
+for proper debug 
+1. set manualy proper tolchain path to gdb at DebugConfiguration page
