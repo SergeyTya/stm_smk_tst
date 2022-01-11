@@ -20,6 +20,8 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include <stdint.h>
+#include <stdio.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -61,6 +63,8 @@ void SystemClock_Config(void);
   * @brief  The application entry point.
   * @retval int
   */
+
+volatile uint32_t counter;
 int main(void)
 {
   /* USER CODE BEGIN 1 */
@@ -78,7 +82,7 @@ int main(void)
   /* USER CODE END Init */
 
   /* Configure the system clock */
-  SystemClock_Config();
+   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
 
@@ -91,11 +95,15 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
+   printf("hello word");
   while (1)
   {
     /* USER CODE END WHILE */
-
     /* USER CODE BEGIN 3 */
+
+
+	  counter++;
   }
   /* USER CODE END 3 */
 }

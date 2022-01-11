@@ -39,15 +39,15 @@
 .global Default_Handler
 
 /* start address for the initialization values of the .data section. defined in linker script */
-.extern .word _sidata
+.word _sidata
 /* start address for the .data section. defined in linker script */
-.extern _sdata:word
+.word _sdata
 /* end address for the .data section. defined in linker script */
-.extern .word _edata
+ .word _edata
 /* start address for the .bss section. defined in linker script */
-.extern .word _sbss
+ .word _sbss
 /* end address for the .bss section. defined in linker script */
-.extern .word _ebss
+ .word _ebss
 
 .equ  BootRAM,        0xF1E0F85F
 /**
@@ -132,7 +132,7 @@ Infinite_Loop:
 
 g_pfnVectors:
 
-  .extern .word _estack
+  .word _estack
   .word Reset_Handler
   .word NMI_Handler
   .word HardFault_Handler

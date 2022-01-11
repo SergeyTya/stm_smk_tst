@@ -35,10 +35,10 @@ if(${CMAKE_C_COMPILER_ID} STREQUAL "GNU")
 		-fsigned-char
 		-ffreestanding 
 		-nostartfiles
-		-nostdlib
+		#-nostdlib
 		#debug flags
 		#-ggdb3
-		-g3
+		-ggdb3
 		-DDEBUG
 		 ##???
 		 -std=gnu11
@@ -55,7 +55,7 @@ if(${CMAKE_C_COMPILER_ID} STREQUAL "GNU")
 	
 	string(APPEND CMAKE_EXE_LINKER_FLAGS " ${_LINKER_CPU_FLAGS}" 	     )
 	string(APPEND CMAKE_EXE_LINKER_FLAGS " -T ${LINKER_FILE} "	         )
-	string(APPEND CMAKE_EXE_LINKER_FLAGS " --specs=nosys.specs"	         	  )
+	string(APPEND CMAKE_EXE_LINKER_FLAGS " --specs=nano.specs"	         	  )
 	string(APPEND CMAKE_EXE_LINKER_FLAGS " -Wl,-Map=${TARGET_NAME}.map,--cref") # Generate map file
 	#string(APPEND CMAKE_EXE_LINKER_FLAGS " -Wl,-nostartfiles,-nostdlib "	  ) # Do not use the standard system startup files when linking
 	string(APPEND CMAKE_EXE_LINKER_FLAGS " -Wl,-gc-sections      	   " 	  ) # Delete unused section
@@ -105,6 +105,11 @@ add_executable(${TARGET_NAME}
 	${CMAKE_CURRENT_LIST_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c
 	${CMAKE_CURRENT_LIST_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_exti.c 
 	${CMAKE_CURRENT_LIST_DIR}/Src/system_stm32f1xx.c
+#	${CMAKE_CURRENT_LIST_DIR}/Src/newlib/_exit.c
+#	${CMAKE_CURRENT_LIST_DIR}/Src/newlib/_sbrk.c
+#	${CMAKE_CURRENT_LIST_DIR}/Src/newlib/_syscalls.c
+#	${CRT0_OBJ} 
+#    ${CRT_OBJ}
 	)
 	
 include_directories(

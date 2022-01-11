@@ -489,7 +489,8 @@ extern "C" {
   * @note  DISABLE: JTAG-DP Disabled and SW-DP Disabled
   * @retval None
   */
-#define __HAL_AFIO_REMAP_SWJ_DISABLE()  AFIO_DBGAFR_CONFIG(AFIO_MAPR_SWJ_CFG_DISABLE)
+// #define __HAL_AFIO_REMAP_SWJ_DISABLE()  AFIO_DBGAFR_CONFIG(AFIO_MAPR_SWJ_CFG_DISABLE)
+#define __HAL_AFIO_REMAP_SWJ_DISABLE() { }
 
 #if defined(AFIO_MAPR_SPI3_REMAP)
 
