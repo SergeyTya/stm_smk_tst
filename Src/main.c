@@ -96,14 +96,14 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-   printf("hello word");
+//   printf("hello word");
   while (1)
   {
     /* USER CODE END WHILE */
     /* USER CODE BEGIN 3 */
 
 
-	  counter++;
+	   counter++;
   }
   /* USER CODE END 3 */
 }
