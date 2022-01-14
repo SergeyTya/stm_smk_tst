@@ -65,6 +65,7 @@ void SystemClock_Config(void);
   */
 
 volatile uint32_t counter;
+volatile uint32_t temp32 = 1;
 int main(void)
 {
   /* USER CODE BEGIN 1 */
@@ -103,7 +104,12 @@ int main(void)
     /* USER CODE BEGIN 3 */
 
 
-	   counter++;
+	if(temp32 == 1){
+		counter++;
+	}else{
+		counter=0;
+	}
+
   }
   /* USER CODE END 3 */
 }

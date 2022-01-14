@@ -10,6 +10,14 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_BUILD_TYPE Debug)
 
+#set(EXECUTABLE_OUTPUT_PATH  "${CMAKE_CURRENT_LIST_DIR}/../build_iar/exe")
+#set(CMAKE_BINARY_DIR "${EXECUTABLE_OUTPUT_PATH}")
+
+#set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}") # puts libriries and bin at the same dir
+#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
+#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
+
+
 
 message("-- Compiler ID ${CMAKE_C_COMPILER_ID}")
 
@@ -41,6 +49,10 @@ target_sources(${TARGET_NAME}
 #    ${CRT_OBJ}
 	
 )
+#
+target_include_directories(${TARGET_NAME} PUBLIC
+                          "${PROJECT_BINARY_DIR}"
+                          )
 	
 include_directories(
 	./Inc
@@ -67,17 +79,37 @@ if(${CMAKE_C_COMPILER_ID} STREQUAL "IAR")
   			 )
   			 
 	# Set the compiler flags for the "myProgram" target
-	target_compile_options(${TARGET_NAME} PRIVATE $<$<COMPILE_LANGUAGE:C,CXX, ASM>:--dlib_config normal> 
-		--cpu $<TARGET_PROPERTY:CPU> --fpu $<TARGET_PROPERTY:FPU> -DUSE_HAL_DRIVER -DSTM32F103xE)
+	target_compile_options(${TARGET_NAME} 
+	PRIVATE $<$<COMPILE_LANGUAGE:C,CXX, ASM>:--dlib_config normal> 
+	PRIVATE --cpu $<TARGET_PROPERTY:CPU>
+	PRIVATE	--fpu $<TARGET_PROPERTY:FPU> 
+	PRIVATE -DUSE_HAL_DRIVER -DSTM32F103xE 
+	)
 
 	# Set the linker flags for the target
 	target_link_options(${TARGET_NAME} PRIVATE
   # Genex evaluates if we are using the `Debug` configuration
- 	$<$<CONFIG:Debug>:--semihosting --redirect ___write=___write_buffered>
+ 	$<$<CONFIG:Debug>: --no_wrap_diagnostics  --semihosting --redirect ___write=___write_buffered>
   # Create a map file from the target's ELF
   	--map $<TARGET_FILE:${TARGET_NAME}>.map
   # Set the linker script
-  	--config $<TARGET_PROPERTY:LINKER_FILE> )
+  	--config $<TARGET_PROPERTY:LINKER_FILE>)
+  	
+  	# Add a custom target for `ielftool` to generate additional output
+	add_custom_target(ielftool DEPENDS $<TARGET_FILE:${TARGET_NAME}>
+  	COMMAND ${CMAKE_IAR_ELFTOOL}
+  		--silent
+  		# Genex evaluates FORMAT property to select the output format
+  		--$<TARGET_PROPERTY:ielftool,FORMAT>
+  		# Uses the target file as input
+  		$<TARGET_FILE:${TARGET_NAME}>
+  		# Name the output based on the selected format
+  		$<TARGET_FILE:${TARGET_NAME}>.$<TARGET_PROPERTY:ielftool,FORMAT> )
+
+		# Set the custom target FORMAT property
+		# to select the desired output format (ihex|srec|bin)
+	#	set_target_properties(ielftool PROPERTIES FORMAT ihex)
+  	
  	
 endif()
 
@@ -111,7 +143,7 @@ if(${CMAKE_C_COMPILER_ID} STREQUAL "GNU")
 		PRIVATE -nostartfiles
 		PRIVATE -nostdlib
 		PRIVATE -g3
-		PRIVATE -std=gnu11
+		PRIVATE -std=gnu99
 		PRIVATE -DUSE_HAL_DRIVER -DSTM32F103xE -DDEBUG
 		PRIVATE -MMD -MP -MF
 		)
